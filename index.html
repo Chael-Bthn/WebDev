@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Development Activities — Michael Angelo G. Bathan</title>
+  <meta name="description" content="List of my activities for the COMP 016 Web Development course." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+
+<body>
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <div class="navbar-wrapper">
+    <nav class="navbar-custom">
+      <a href="#" id="backBtn" class="back-btn" aria-label="Back to portfolio">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
+        </svg>
+        Back to Portfolio
+      </a>
+      <span class="nav-title">Web Development Activities</span>
+      <div class="nav-controls">
+        <div class="theme-menu-wrapper">
+          <button class="theme-trigger" id="themeTrigger" title="Switch accent color" type="button">
+            <span class="theme-dot"></span>
+          </button>
+          <div class="theme-dropdown" id="themeDropdown">
+            <button class="theme-option option-slate active-option" data-theme="slate" title="Midnight Slate" type="button"></button>
+            <button class="theme-option option-neon" data-theme="neon" title="Cyber Neon" type="button"></button>
+            <button class="theme-option option-emerald" data-theme="emerald" title="Emerald Aurora" type="button"></button>
+            <button class="theme-option option-sunset" data-theme="sunset" title="Sunset Obsidian" type="button"></button>
+          </div>
+        </div>
+        <label class="toggle-switch" title="Toggle dark mode">
+          <input type="checkbox" id="darkToggle" />
+          <div class="toggle-track"><div class="toggle-knob"></div></div>
+        </label>
+      </div>
+    </nav>
+  </div>
+
+  <div class="container">
+    <header class="page-header">
+      <div class="eyebrow">COMP 016</div>
+      <h1 class="page-title">Web Development <span>Activities</span></h1>
+      <p class="page-sub">List of my activities for the COMP 016 Web Development course. Pick an activity to open it.</p>
+    </header>
+  </div>
+
+  <hr class="section-divider" />
+
+  <main class="container">
+    <div class="activities" id="activityList"></div>
+  </main>
+
+  <footer>&copy; <span id="year"></span> Michael Angelo G. Bathan</footer>
+
+  <div class="bg-blobs-container">
+    <div class="bg-blob bg-blob-1"></div>
+    <div class="bg-blob bg-blob-2"></div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+
+</html>

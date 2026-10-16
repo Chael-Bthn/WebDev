@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { --bg: #0d0d11; --logo-bg: #a4a4a8; --surface: #151515; --text: #f2f2f2; --radius: 22px; }
+        html { background: var(--bg); }
+        body { min-height: 100vh; overflow-x: hidden; color: var(--text); font-family: "Inter", "Helvetica Neue", "Segoe UI", system-ui, sans-serif; background: transparent; }
+        .page { padding-top: 90px; padding-bottom: 90px; }
+
+        body::before {
+            content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background:
+                radial-gradient(circle 120px at 14% -2%, rgba(255, 214, 150, .55), transparent),
+                radial-gradient(circle 90px at 90% -2%, rgba(255, 200, 130, .28), transparent),
+                conic-gradient(from 158deg at 14% -3%, transparent 0deg, rgba(255, 196, 120, .20) 22deg, transparent 44deg),
+                conic-gradient(from 164deg at 90% -3%, transparent 0deg, rgba(255, 196, 120, .11) 16deg, transparent 32deg),
+                radial-gradient(ellipse 55% 45% at 14% 0%, rgba(240, 184, 110, .20), transparent 70%),
+                radial-gradient(ellipse 45% 35% at 90% 0%, rgba(240, 184, 110, .10), transparent 70%),
+                radial-gradient(ellipse 60% 40% at 50% 110%, rgba(120, 110, 150, .12), transparent 70%),
+                var(--bg);
+        }
+
+
+        .c1, .c2, .c3, .c8, .c9, .c11 { height: 250px; }
+        .c5 { height: 150px; }
+        .c10 { height: 510px; }
+        .c4 { min-height: 400px; }
+        .c6, .c12 { min-height: 150px; }
+        .c7 { min-height: 250px; }
+
+        @media (min-width: 1200px) {
+            :root { --k: min(calc(100vh + 70px - 32px), 740px); } /* 740px = max board height, so fullscreen does not zoom in */
+            .container.page { max-width: 1080px; padding-top: 72px; padding-bottom: 28px; }
+            .c1, .c2, .c3, .c8, .c9, .c11 { height: max(160px, calc(var(--k) * .273)); }
+            .c5 { height: max(95px, calc(var(--k) * .164)); }
+            .c10 { height: max(320px, calc(var(--k) * .557)); }
+            .c4 { min-height: 0; }
+            .c6 { min-height: max(90px, calc(var(--k) * .181 - 16px)); }
+            .c7 { min-height: max(140px, calc(var(--k) * .29 - 16px)); }
+            .c12 { min-height: 60px; }
+        }
+
+        @media (max-width: 1199.98px) {
+            .c10, .c11, .c12 { height: 320px; min-height: 0; }
+        }
+
+        @media (max-width: 991.98px) {
+            .c5, .c7 { height: 170px; min-height: 0; }
+        }
+
+        @media (max-width: 767.98px) {
+            :root { --radius: 18px; }
+            .page { padding-top: 76px; padding-bottom: 40px; }
+            .c1, .c2, .c3, .c9 { height: 200px; }
+            .c8 { height: 140px; }
+            .c4 { min-height: 420px; }
+            .c6 { height: 190px; min-height: 0; }
+            .c10 { height: 420px; }
+            .c11 { height: 240px; }
+            .c12 { height: 200px; }
+        }
+
+        .card {
+            position: relative; overflow: hidden; background: var(--surface);
+            border: 1px solid rgba(255, 255, 255, .08); border-radius: var(--radius);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+            transition: transform .35s, box-shadow .35s, border-color .35s;
+        }
+        .card img {
+            position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+            object-fit: cover; object-position: var(--pos, center); transform: scale(var(--zoom, 1));
+            transition: transform .6s, filter .5s;
+        }
+
+        .card::after {
+            content: ""; position: absolute; inset: 0; pointer-events: none; transition: opacity .4s;
+            background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, .35) 100%);
+        }
+
+        .logo-card { background: var(--logo-bg); }
+        .logo-card img { object-fit: contain; padding: 10px; mix-blend-mode: multiply; filter: contrast(1.1); }
+        .logo-card::after { background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, .28) 100%); }
+
+        .lowexpo { filter: brightness(.7) contrast(1.12) saturate(.9); }
+
+        @media (hover: hover) {
+            .card:hover { transform: translateY(-4px); border-color: rgba(240, 184, 110, .5); box-shadow: 0 16px 40px rgba(0, 0, 0, .7); }
+            .card:hover img { transform: scale(calc(var(--zoom, 1) * 1.05)); }
+            .card:hover::after { opacity: 0; }
+            .card:hover .lowexpo { filter: brightness(.85) contrast(1.1); }
+            .back-btn:hover { transform: translateX(-2px); border-color: rgba(240, 184, 110, .6); background: rgba(30, 28, 26, .75); }
+        }
+
+        .back-btn {
+            position: fixed; top: 24px; left: 24px; z-index: 1000;
+            display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px 9px 12px;
+            color: var(--text); font-size: 14px; font-weight: 500; letter-spacing: .02em; text-decoration: none;
+            background: rgba(20, 20, 24, .6); border: 1px solid rgba(255, 255, 255, .12); border-radius: 999px;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            transition: transform .25s, border-color .25s, background .25s;
+        }
+        .back-btn:hover { color: var(--text); }
+        .back-btn svg { width: 18px; height: 18px; }
+        @media (max-width: 767.98px) { .back-btn { top: 14px; left: 14px; padding: 7px 14px 7px 10px; font-size: 13px; } }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+    </style>
+</head>
+
+<body>
+    <a href="../index.html" class="back-btn" aria-label="Back to Web Development activities">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+        Back
+    </a>
+
+    <div class="container page">
+        <div class="row gx-2 gy-3">
+
+            <div class="col-12 col-xl-9 d-flex flex-column gap-3">
+
+                <div class="row gx-2 gy-3">
+                    <div class="col-12 col-md-8">
+                        <div class="card c1"><img src="assets/quote1.jpg" style="--pos: 50% 90%" alt="Sometimes you win, sometimes you learn"></div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="card c2"><img src="assets/coffee.jpg" alt="Two lattes with latte art"></div>
+                    </div>
+                </div>
+
+                <div class="row gx-2 gy-3">
+                    <div class="col-12 col-md-6 d-flex flex-column gap-3">
+                        <div class="card c3"><img src="assets/coding.jpg" style="--pos: 50% 10%" alt="Coding setup with multiple screens"></div>
+                        <div class="card c6 flex-grow-1"><img src="assets/spotify.jpg" alt="Spotify"></div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 d-flex flex-column">
+                        <div class="card c4 flex-grow-1"><img src="assets/main_pic.jpg" style="--pos: 50% 30%" alt="Main portrait"></div>
+                    </div>
+                    <div class="col-12 col-lg-2 d-flex flex-row flex-lg-column gap-3">
+                        <div class="card logo-card c5 flex-fill flex-lg-grow-0"><img src="assets/main_logo.jpg" alt="Chael logo"></div>
+                        <div class="card c7 flex-fill flex-lg-grow-1"><img src="assets/quote2.jpg" alt="Quote"></div>
+                    </div>
+                </div>
+
+                <div class="row gx-2 gy-3">
+                    <div class="col-12 col-md-4">
+                        <div class="card logo-card c8"><img src="assets/sync_logo.jpg" alt="Sync logo"></div>
+                    </div>
+                    <div class="col-12 col-md-8">
+                        <div class="card c9"><img src="assets/car.jpg" style="--pos: 50% 100%" alt="Sunset view from inside a car"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-3 d-flex flex-column flex-md-row flex-xl-column gap-3">
+                <div class="card c10 flex-md-fill flex-xl-grow-0"><img class="lowexpo" src="assets/gym_pic.jpg" style="--pos: 50% 30%" alt="Gym"></div>
+                <div class="card c11 flex-md-fill flex-xl-grow-0"><img src="assets/group_pic.jpg" style="--pos: 50% 35%" alt="Group photo"></div>
+                <div class="card c12 flex-md-fill flex-xl-grow-1"><img src="assets/stmichael.jpg" alt="St. Michael"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
