@@ -1,0 +1,74 @@
+[
+  {
+    "song": "Best Part",
+    "artist": "Daniel Caesar",
+    "features": ["H.E.R."],
+    "releaseDate": "2017-08-25",
+    "cover": "assets/covers/best-part.png",
+    "spotify": "https://open.spotify.com/search/Best%20Part%20Daniel%20Caesar%20H.E.R."
+  },
+  {
+    "song": "Love Again",
+    "artist": "Daniel Caesar",
+    "features": ["Brandy"],
+    "releaseDate": "2019-06-28",
+    "cover": "assets/covers/love-again.jpg",
+    "spotify": "https://open.spotify.com/search/Love%20Again%20Daniel%20Caesar%20Brandy"
+  },
+  {
+    "song": "God's Plan",
+    "artist": "Drake",
+    "features": [],
+    "releaseDate": "2018-01-19",
+    "cover": "assets/covers/gods-plan.jpg",
+    "spotify": "https://open.spotify.com/search/God's%20Plan%20Drake"
+  },
+  {
+    "song": "One Dance",
+    "artist": "Drake",
+    "features": ["WizKid", "Kyla"],
+    "releaseDate": "2016-04-05",
+    "cover": "assets/covers/one-dance.jpg",
+    "spotify": "https://open.spotify.com/search/One%20Dance%20Drake%20WizKid%20Kyla"
+  },
+  {
+    "song": "Isa Lang",
+    "artist": "Arthur Nery",
+    "features": [],
+    "releaseDate": "2021-12-16",
+    "cover": "assets/covers/isa-lang.jpg",
+    "spotify": "https://open.spotify.com/search/Isa%20Lang%20Arthur%20Nery"
+  },
+  {
+    "song": "Sinag",
+    "artist": "Arthur Nery",
+    "features": ["Samantha Benwick"],
+    "releaseDate": "2022-07-30",
+    "cover": "assets/covers/sinag.jpg",
+    "spotify": "https://open.spotify.com/search/Sinag%20Arthur%20Nery%20Samantha%20Benwick"
+  },
+  {
+    "song": "No Guidance",
+    "artist": "Chris Brown",
+    "features": ["Drake"],
+    "releaseDate": "2019-06-28",
+    "cover": "assets/covers/no-guidance.jpg",
+    "spotify": "https://open.spotify.com/search/No%20Guidance%20Chris%20Brown%20Drake"
+  },
+  {
+    "song": "Under the Influence",
+    "artist": "Chris Brown",
+    "features": [],
+    "releaseDate": "2022-09-06",
+    "cover": "assets/covers/under-the-influence.jpg",
+    "spotify": "https://open.spotify.com/search/Under%20the%20Influence%20Chris%20Brown"
+  },
+  {
+    "song": "Lowkey",
+    "artist": "NIKI",
+    "features": [],
+    "releaseDate": "2019-04-24",
+    "cover": "assets/covers/lowkey.jpg",
+    "spotify": "https://open.spotify.com/track/7ipqVwkp2MhZv0Ojzqy1NV?autoplay_ok=1"
+  }
+]

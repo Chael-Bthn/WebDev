@@ -2,7 +2,7 @@ const PORTFOLIO_URL = 'https://chael-bthn.github.io/';
 
 const ACTIVITIES = [
   { name: 'Bento Layout', href: 'Activity_1/index.html', ready: true },
-  { name: '', href: 'Activity_2/index.html', ready: false },
+  { name: 'JSON Activity', href: 'Activity_2/index.html', ready: true },
   { name: '', href: 'Activity_3/index.html', ready: false },
   { name: '', href: 'Activity_4/index.html', ready: false }
 ];

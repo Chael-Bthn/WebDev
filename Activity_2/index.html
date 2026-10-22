@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mixtape Archives</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root { --bg: #0d0d11; --surface: #151515; --text: #f2f2f2; --accent: #f0b86e; --card-w: 300px; --gap: 24px; }
+    html { background: var(--bg); }
+    body { min-height: 100vh; overflow-x: hidden; color: var(--text); font-family: "Inter", "Helvetica Neue", "Segoe UI", system-ui, sans-serif; background: transparent; }
+
+    /* ---------- background (same as Activity 1) ---------- */
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+      background:
+        radial-gradient(circle 120px at 14% -2%, rgba(255, 214, 150, .55), transparent),
+        radial-gradient(circle 90px at 90% -2%, rgba(255, 200, 130, .28), transparent),
+        conic-gradient(from 158deg at 14% -3%, transparent 0deg, rgba(255, 196, 120, .20) 22deg, transparent 44deg),
+        conic-gradient(from 164deg at 90% -3%, transparent 0deg, rgba(255, 196, 120, .11) 16deg, transparent 32deg),
+        radial-gradient(ellipse 55% 45% at 14% 0%, rgba(240, 184, 110, .20), transparent 70%),
+        radial-gradient(ellipse 45% 35% at 90% 0%, rgba(240, 184, 110, .10), transparent 70%),
+        radial-gradient(ellipse 60% 40% at 50% 110%, rgba(120, 110, 150, .12), transparent 70%),
+        var(--bg);
+    }
+
+    .page { padding-top: 80px; padding-bottom: 10px; text-align: center; }
+    .subtitle { color: rgba(255, 255, 255, .55); }
+
+    /* ---------- carousel ---------- */
+    .carousel-wrap { position: relative; width: 100%; }
+    .track {
+      display: flex; gap: var(--gap); overflow-x: auto; scroll-snap-type: x mandatory;
+      padding: 30px calc(50% - var(--card-w) / 2); scrollbar-width: none; scroll-behavior: smooth;
+    }
+    .track::-webkit-scrollbar { display: none; }
+
+    .song-card {
+      flex: 0 0 var(--card-w); scroll-snap-align: center; position: relative; overflow: hidden; isolation: isolate;
+      padding: 14px; text-align: center;
+      background: var(--surface); border: 1px solid rgba(255, 255, 255, .08); border-radius: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+      opacity: .45; transform: scale(.88);
+      transition: transform .45s ease, opacity .45s ease, border-color .45s ease, box-shadow .45s ease;
+      animation: rise .6s ease both;
+    }
+    .song-card:not(.active) { cursor: pointer; }
+    .song-card.active { opacity: 1; transform: scale(1); border-color: rgba(240, 184, 110, .5); box-shadow: 0 16px 40px rgba(0, 0, 0, .7); }
+    @keyframes rise { from { opacity: 0; transform: translateY(24px) scale(.88); } }
+
+    /* blurred cover background (only visible on the active card) */
+    .song-card::before {
+      content: ""; position: absolute; inset: 0; z-index: -3; opacity: 0; transition: opacity .6s ease;
+      background: linear-gradient(160deg, hsl(var(--h) 60% 30%), hsl(calc(var(--h) + 50) 60% 12%));
+    }
+    .bg-blur {
+      position: absolute; inset: -30px; width: calc(100% + 60px); height: calc(100% + 60px); z-index: -2;
+      object-fit: cover; filter: blur(28px) brightness(.55) saturate(1.3); opacity: 0; transition: opacity .6s ease;
+    }
+    .song-card::after {
+      content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, .05), rgba(0, 0, 0, .45));
+    }
+    .song-card.active::before, .song-card.active .bg-blur { opacity: 1; }
+
+    .cover {
+      position: relative; width: 100%; aspect-ratio: 1 / 1; border-radius: 14px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; font-size: 72px; font-weight: 700;
+      background: linear-gradient(135deg, hsl(var(--h) 70% 45%), hsl(calc(var(--h) + 50) 70% 22%));
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .5);
+    }
+    .cover span { opacity: .85; text-shadow: 0 4px 18px rgba(0, 0, 0, .35); }
+    .cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+
+    .info { padding: 16px 6px 6px; }
+    .song-title { font-size: 1.3rem; font-weight: 600; line-height: 1.2; }
+    .artist { color: var(--accent); font-weight: 500; }
+    .meta { color: rgba(255, 255, 255, .7); font-size: .88rem; }
+    .meta div + div { margin-top: 2px; }
+
+    /* ---------- sound wave button (static) ---------- */
+    .wave-btn {
+      display: inline-flex; align-items: center; justify-content: center; width: 96px; height: 40px; margin-top: 14px;
+      text-decoration: none; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 999px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      transition: border-color .25s, background .25s;
+    }
+    .wave-btn:hover { border-color: rgba(240, 184, 110, .8); background: rgba(240, 184, 110, .15); }
+    .bars { display: inline-flex; align-items: center; gap: 3px; height: 24px; }
+    .bars i { display: block; width: 3px; border-radius: 2px; background: var(--accent); }
+    .bars i:nth-child(1) { height: 8px; } .bars i:nth-child(2) { height: 16px; } .bars i:nth-child(3) { height: 24px; }
+    .bars i:nth-child(4) { height: 14px; } .bars i:nth-child(5) { height: 20px; } .bars i:nth-child(6) { height: 10px; }
+
+    /* ---------- nav ---------- */
+    .nav-btn {
+      position: absolute; top: 50%; transform: translateY(-50%); z-index: 5; width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center; color: var(--text); cursor: pointer;
+      background: rgba(20, 20, 24, .7); border: 1px solid rgba(255, 255, 255, .12); border-radius: 50%;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color .25s, background .25s;
+    }
+    .nav-btn:hover { border-color: rgba(240, 184, 110, .6); background: rgba(30, 28, 26, .85); }
+    .nav-btn svg { width: 20px; height: 20px; }
+    .nav-prev { left: 12px; } .nav-next { right: 12px; }
+    .counter { text-align: center; color: rgba(255, 255, 255, .5); letter-spacing: .08em; font-size: .9rem; padding-bottom: 30px; }
+
+    /* ---------- back button ---------- */
+    .back-btn {
+      position: fixed; top: 24px; left: 24px; z-index: 1000;
+      display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px 9px 12px;
+      color: var(--text); font-size: 14px; font-weight: 500; letter-spacing: .02em; text-decoration: none;
+      background: rgba(20, 20, 24, .6); border: 1px solid rgba(255, 255, 255, .12); border-radius: 999px;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      transition: transform .25s, border-color .25s, background .25s;
+    }
+    .back-btn:hover { color: var(--text); transform: translateX(-2px); border-color: rgba(240, 184, 110, .6); background: rgba(30, 28, 26, .75); }
+    .back-btn svg { width: 18px; height: 18px; }
+    @media (max-width: 767.98px) {
+      .back-btn { top: 14px; left: 14px; padding: 7px 14px 7px 10px; font-size: 13px; }
+      .nav-btn { display: none; }
+      .page { padding-top: 76px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+
+<body>
+  <a href="../index.html" class="back-btn" aria-label="Back to Web Development activities">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6" /></svg>
+    Back
+  </a>
+
+  <div class="container page">
+    <h1 class="mb-1">Mixtape Archives</h1>
+    <p class="subtitle mb-0">Chael's personalized playlist</p>
+  </div>
+
+  <div class="carousel-wrap">
+    <button class="nav-btn nav-prev" id="prev" aria-label="Previous song">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+    </button>
+    <div class="track" id="track"></div>
+    <button class="nav-btn nav-next" id="next" aria-label="Next song">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6" /></svg>
+    </button>
+  </div>
+  <div class="counter mt-2" id="counter"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    var track = document.getElementById("track");
+    var counter = document.getElementById("counter");
+
+    // load the separate JSON file
+    fetch("songs.json")
+      .then(function (response) {
+        if (!response.ok) {
+          throw new Error("Could not load songs.json (status " + response.status + ")");
+        }
+        return response.json();
+      })
+      .then(function (songs) {
+        var html = "";
+
+        for (var i = 0; i < songs.length; i++) {
+          var s = songs[i];
+          var date = new Date(s.releaseDate + "T00:00:00").toLocaleDateString("en-US", {
+            year: "numeric", month: "long", day: "numeric"
+          });
+          var features = s.features.length > 0 ? s.features.join(", ") : "None";
+
+          html += `
+            <div class="song-card" style="--h: ${(i * 47) % 360}; animation-delay: ${i * 0.08}s">
+              <img class="bg-blur" src="${s.cover}" alt="" onerror="this.remove()">
+              <div class="cover">
+                <span>${s.song.charAt(0)}</span>
+                <img src="${s.cover}" alt="${s.song} cover" onerror="this.remove()">
+              </div>
+              <div class="info">
+                <div class="song-title">${s.song}</div>
+                <div class="artist mb-2">${s.artist}</div>
+                <div class="meta">
+                  <div>Features: ${features}</div>
+                  <div>Released: ${date}</div>
+                </div>
+                <a class="wave-btn" href="${s.spotify}" target="_blank" rel="noopener" aria-label="Open ${s.song} on Spotify" title="Open on Spotify">
+                  <span class="bars"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+                </a>
+              </div>
+            </div>
+          `;
+        }
+
+        track.innerHTML = html;
+        setupCarousel();
+      })
+      .catch(function (error) {
+        track.innerHTML = `<div class="container"><div class="alert alert-danger">${error.message}</div></div>`;
+      });
+
+    function setupCarousel() {
+      var cards = track.querySelectorAll(".song-card");
+      var current = -1;
+      var ticking = false;
+
+      // the active card is whichever one is closest to the center of the track
+      function updateActive() {
+        var box = track.getBoundingClientRect();
+        var center = box.left + box.width / 2;
+        var best = 0, bestDist = Infinity;
+
+        cards.forEach(function (card, i) {
+          var r = card.getBoundingClientRect();
+          var dist = Math.abs(r.left + r.width / 2 - center);
+          if (dist < bestDist) { bestDist = dist; best = i; }
+        });
+
+        if (best !== current) {
+          if (current >= 0) { cards[current].classList.remove("active"); }
+          cards[best].classList.add("active");
+          counter.textContent = (best + 1) + " / " + cards.length;
+          current = best;
+        }
+        ticking = false;
+      }
+
+      track.addEventListener("scroll", function () {
+        if (!ticking) { ticking = true; requestAnimationFrame(updateActive); }
+      });
+
+      function go(index) {
+        index = Math.max(0, Math.min(cards.length - 1, index));
+        cards[index].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }
+      // clicking any card that isn't centered brings it to the center
+      // (and stops its Spotify link from opening until it's the active card)
+      cards.forEach(function (card, i) {
+        card.addEventListener("click", function (e) {
+          if (i !== current) {
+            e.preventDefault();
+            go(i);
+          }
+        });
+      });
+
+      document.getElementById("next").onclick = function () { go(current + 1); };
+      document.getElementById("prev").onclick = function () { go(current - 1); };
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight") { go(current + 1); }
+        if (e.key === "ArrowLeft") { go(current - 1); }
+      });
+
+      track.scrollLeft = 0;
+      updateActive();
+    }
+  </script>
+</body>
+
+</html>
