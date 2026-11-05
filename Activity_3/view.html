@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Card | Royale Binder</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <style>
+    :root {
+      --navy: #0b1431; --gold: #f5c542;
+      --common: #9fb3c8; --rare: #ff9f1a; --epic: #b44cff; --legendary: #2fe6ff; --champion: #ffd23f;
+      --evo: #b44cff; --hero: #4da3ff;
+    }
+    body { background: radial-gradient(circle at 50% 0, #24397a, var(--navy) 70%) fixed; color: #fff; min-height: 100vh; }
+    .title { font-weight: 800; letter-spacing: 1px; color: var(--gold); text-shadow: 0 3px 0 #7a5a00; }
+    .r-common { --c: var(--common); } .r-rare { --c: var(--rare); } .r-epic { --c: var(--epic); }
+    .r-legendary { --c: var(--legendary); } .r-champion { --c: var(--champion); }
+
+        .navbar-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: space-between; }
+    .nav-btn { border-radius: 20px; font-weight: 600; }
+    .counter { opacity: .7; font-size: .85rem; font-variant-numeric: tabular-nums; }
+
+        .showcase { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 0 6px; position: relative; }
+    .showcase::before { content: ''; position: absolute; top: 40px; width: 420px; max-width: 90vw; height: 420px; border-radius: 50%; z-index: 0;
+      background: radial-gradient(circle, color-mix(in srgb, var(--fc, var(--c)) 40%, transparent), transparent 68%); filter: blur(24px); transition: background .6s; pointer-events: none; }
+    .stage { perspective: 1000px; display: flex; justify-content: center; position: relative; z-index: 1; padding: 20px 0; }
+    .card3d { --fc: var(--c); position: relative; width: 290px; height: 400px; border-radius: 20px; padding: 16px;
+      background: linear-gradient(160deg, #1d2d66, #0e1838); border: 3px solid var(--fc);
+      box-shadow: 0 0 30px var(--fc), 0 20px 40px rgba(0,0,0,.5); transform-style: preserve-3d;
+      transition: transform .15s ease-out, border-color .5s, box-shadow .5s, background .5s;
+      display: flex; flex-direction: column; justify-content: space-between; align-items: center; animation: float 5s ease-in-out infinite; }
+    .card3d:hover { animation-play-state: paused; }
+    @keyframes float { 50% { translate: 0 -6px; } }
+    .card3d.form-evo { --fc: var(--evo); background: linear-gradient(160deg, #3b1a6e, #130a2e); }
+    .card3d.form-hero { --fc: var(--hero); background: linear-gradient(160deg, #1b4a8f, #0a1a3d); }
+
+    .art { width: 100%; height: 270px; border-radius: 14px; background: radial-gradient(circle, rgba(255,255,255,.25), transparent 70%);
+      transform: translateZ(40px); display: flex; align-items: center; justify-content: center; }
+    .art img { height: 100%; max-width: 100%; object-fit: contain; filter: drop-shadow(0 8px 10px rgba(0,0,0,.6)); }
+    .nm { font-size: 1.4rem; font-weight: 800; text-align: center; transform: translateZ(55px); line-height: 1.1; }
+    .rt { color: var(--fc); font-weight: 700; text-align: center; transform: translateZ(35px); transition: color .5s; }
+    .elixir { position: absolute; top: -12px; left: -12px; width: 46px; height: 56px; z-index: 3; display: flex; align-items: center; justify-content: center;
+      background: #c43bd9; border: 3px solid #fff; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; font-weight: 800; font-size: 1.4rem; transform: translateZ(70px); text-shadow: 0 1px 2px #000; }
+    .ribbon { position: absolute; top: -10px; right: -10px; z-index: 3; padding: 4px 12px; border-radius: 12px; font-weight: 800; font-size: .75rem; letter-spacing: .08em;
+      border: 2px solid #fff; transform: translateZ(70px) scale(0); transition: transform .4s cubic-bezier(.3,1.6,.5,1); text-shadow: 0 1px 2px #000; }
+    .form-evo .ribbon { background: var(--evo); transform: translateZ(70px) scale(1); }
+    .form-hero .ribbon { background: var(--hero); transform: translateZ(70px) scale(1); }
+    .glare { position: absolute; inset: 0; border-radius: 17px; pointer-events: none; opacity: 0; transition: opacity .3s;
+      background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.35), transparent 55%); mix-blend-mode: overlay; }
+    .card3d:hover .glare { opacity: 1; }
+
+        .fx { position: absolute; inset: 0; pointer-events: none; z-index: 4; transform: translateZ(60px); }
+    .fx i { position: absolute; left: 50%; top: 45%; width: 40px; height: 40px; margin: -20px; border-radius: 50%; border: 3px solid var(--fc); opacity: 0; }
+    .fx b { position: absolute; inset: -15%; border-radius: 50%; background: radial-gradient(circle, #fff, var(--fc) 35%, transparent 65%); opacity: 0; }
+    .morphing .fx i:nth-child(1) { animation: ring 1s ease-out; }
+    .morphing .fx i:nth-child(2) { animation: ring 1s .15s ease-out; }
+    .morphing .fx i:nth-child(3) { animation: ring 1s .3s ease-out; }
+    .morphing .fx b { animation: flash 1s ease-out; }
+    .morphing .art img { animation: morph 1s ease both; }
+    @keyframes ring { 0% { opacity: .9; transform: scale(.4); } 100% { opacity: 0; transform: scale(9); } }
+    @keyframes flash { 0% { opacity: 0; transform: scale(.4); } 35% { opacity: .95; } 100% { opacity: 0; transform: scale(1.5); } }
+    @keyframes morph { 0% { transform: scale(1); filter: brightness(1); } 30% { transform: scale(.75) rotate(-5deg); filter: brightness(4) saturate(0); }
+      55% { transform: scale(1.3) rotate(4deg); filter: brightness(2.5); } 100% { transform: scale(1); filter: brightness(1) drop-shadow(0 8px 10px rgba(0,0,0,.6)); } }
+
+        .modes { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; z-index: 1; margin-top: 8px; }
+    .mode-btn { --m: var(--evo); display: inline-flex; align-items: center; gap: 8px; padding: 10px 22px; border-radius: 30px; font-weight: 800; letter-spacing: .03em;
+      color: #fff; background: rgba(255,255,255,.07); border: 2px solid var(--m); transition: background .25s, box-shadow .25s, transform .15s; }
+    .mode-btn.hero { --m: var(--hero); }
+    .mode-btn:hover { box-shadow: 0 0 18px var(--m); transform: translateY(-2px); }
+    .mode-btn:active { transform: scale(.96); }
+    .mode-btn.on { background: var(--m); box-shadow: 0 0 22px var(--m); }
+    .mode-btn svg { width: 18px; height: 18px; }
+    .mode-btn:disabled { opacity: .6; pointer-events: none; }
+    .no-forms { opacity: .55; font-size: .85rem; position: relative; z-index: 1; }
+
+        .info { max-width: 900px; margin: 0 auto; }
+    .panel { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 16px; backdrop-filter: blur(6px); }
+    .stat { text-align: center; padding: 14px 6px; height: 100%; }
+    .stat .v { font-size: 1.5rem; font-weight: 800; color: var(--c); line-height: 1.2; }
+    .stat .l { font-size: .72rem; opacity: .7; text-transform: uppercase; letter-spacing: .05em; }
+    .elixir-bar { display: flex; gap: 4px; justify-content: center; margin-top: 6px; }
+    .elixir-bar span { width: 14px; height: 7px; border-radius: 4px; background: rgba(255,255,255,.15); }
+    .elixir-bar span.f { background: #c43bd9; box-shadow: 0 0 6px #c43bd9; }
+    .desc { font-size: 1.02rem; line-height: 1.6; }
+    .desc-skel { height: 14px; border-radius: 7px; background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.2), rgba(255,255,255,.08)); background-size: 200% 100%; animation: sh 1.2s linear infinite; margin-bottom: 8px; }
+    @keyframes sh { to { background-position: -200% 0; } }
+    .sec-title { font-weight: 800; letter-spacing: .04em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .sec-title::before { content: ''; width: 4px; height: 18px; border-radius: 2px; background: var(--c); }
+
+    @media (max-width: 575.98px) {
+      .card3d { width: 250px; height: 345px; }
+      .art { height: 230px; }
+      .nm { font-size: 1.2rem; }
+      .title { font-size: 1.4rem; }
+      .nav-label { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card3d { animation: none; }
+      .morphing .fx i, .morphing .fx b, .morphing .art img { animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid shadow mb-3" style="background: var(--navy); border-bottom: 4px solid var(--gold);">
+    <div class="row">
+      <div class="col">
+        <div class="text-center display-6 title py-3">Royale Binder</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="navbar-row my-3">
+      <a href="index.html" id="backlink" class="btn btn-warning fw-bold nav-btn">&larr; <span class="nav-label">Back to binder</span></a>
+      <div class="d-flex align-items-center gap-2">
+        <a id="prevCard" class="btn btn-outline-light nav-btn" title="Previous card (←)">&larr; <span class="nav-label">Prev</span></a>
+        <span class="counter" id="counter"></span>
+        <a id="nextCard" class="btn btn-outline-light nav-btn" title="Next card (→)"><span class="nav-label">Next</span> &rarr;</a>
+        <a id="randomCard" class="btn btn-outline-light nav-btn" title="Random card">&#127922; <span class="nav-label">Random</span></a>
+      </div>
+    </div>
+
+    <div id="content">
+      <div class="text-center py-5">
+        <div class="spinner-border text-warning" role="status"><span class="visually-hidden">Loading...</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"></script>
+  <script>
+    // ---- LIVE API via the RoyaleAPI proxy (key must whitelist the proxy IP) ----
+    const API_KEY = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImIzMDc2ZWE5LTU5YTktNGRhNC05ZGVlLWJkNDYxNjcwODg5ZCIsImlhdCI6MTc5Mzg4NDU4MCwic3ViIjoiZGV2ZWxvcGVyLzU4MDIzOWFlLWRkZDktNDhmNy04MTc5LTRhN2UzMGNkZjZiNCIsInNjb3BlcyI6WyJyb3lhbGUiXSwibGltaXRzIjpbeyJ0aWVyIjoiZGV2ZWxvcGVyL3NpbHZlciIsInR5cGUiOiJ0aHJvdHRsaW5nIn0seyJjaWRycyI6WyI0NS43OS4yMTguNzkiXSwidHlwZSI6ImNsaWVudCJ9XX0.AQ9l-DX6LTTdOp_cyB6zAsJIXXxobFTYX98FnslY2jEiv4T2WVAw-6fpKj1_aq0ZCnqKQoMFrBYO9lA-LTbfmA';
+    async function loadCards() {
+      const cached = sessionStorage.getItem('cr_cards');
+      if (cached) return JSON.parse(cached);
+      const response = await fetch('https://proxy.royaleapi.dev/v1/cards', {
+        headers: { Authorization: 'Bearer ' + API_KEY }
+      });
+      if (!response.ok) throw new Error('API error ' + response.status);
+      const data = await response.json();
+      sessionStorage.setItem('cr_cards', JSON.stringify(data.items));
+      return data.items;
+    }
+
+    async function loadMeta() {
+      try {
+        const cached = sessionStorage.getItem('cr_meta');
+        if (cached) return JSON.parse(cached);
+        const r = await fetch('https://royaleapi.github.io/cr-api-data/json/cards.json');
+        if (!r.ok) return [];
+        const data = await r.json();
+        const slim = data.map(m => ({ id: m.id, description: m.description || '', type: m.type || '', arena: m.arena }));
+        sessionStorage.setItem('cr_meta', JSON.stringify(slim));
+        return slim;
+      } catch (e) { return []; }
+    }
+
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = Number(urlParams.get('id'));
+    const keep = '&page=' + (urlParams.get('page') || 1) + '&q=' + encodeURIComponent(urlParams.get('q') || '') +
+      '&sort=' + (urlParams.get('sort') || 'id') + '&rarity=' + (urlParams.get('rarity') || 'all') + '&form=' + (urlParams.get('form') || 'all');
+    document.getElementById("backlink").href = 'index.html?' + keep.slice(1);
+
+    var current = null, formState = 'normal', urls = {}, morphBusy = false;
+
+    const getCard = async () => {
+      const cards = (await loadCards()).slice().sort((a, b) => a.id - b.id);
+      const i = cards.findIndex(c => c.id === id);
+      if (i < 0) {
+        document.getElementById("content").innerHTML = '<div class="text-center h4 py-5">Card not found.</div>';
+        return;
+      }
+      const c = current = cards[i];
+      const link = x => 'view.html?id=' + x.id + keep;
+      document.title = c.name + ' | Royale Binder';
+      document.getElementById("prevCard").href = link(cards[(i - 1 + cards.length) % cards.length]);
+      document.getElementById("nextCard").href = link(cards[(i + 1) % cards.length]);
+      document.getElementById("randomCard").href = link(cards[Math.floor(Math.random() * cards.length)]);
+      document.getElementById("counter").textContent = (i + 1) + ' / ' + cards.length;
+
+      urls = { normal: c.iconUrls.medium, evo: c.iconUrls.evolutionMedium || null, hero: c.iconUrls.heroMedium || null };
+      Object.values(urls).forEach(u => { if (u) new Image().src = u; });
+
+      const cost = c.elixirCost ?? '?';
+
+      let bar = '';
+      for (let n = 1; n <= 10; n++) bar += '<span class="' + (n <= (c.elixirCost || 0) ? 'f' : '') + '"></span>';
+
+      const modeBtns = (urls.evo ? '<button class="mode-btn evo" id="btnEvo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg><span>Evolve</span></button>' : '') +
+        (urls.hero ? '<button class="mode-btn hero" id="btnHero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg><span>Hero mode</span></button>' : '');
+
+      document.getElementById("content").innerHTML = `
+        <div class="r-` + c.rarity + `">
+          <div class="showcase" id="showcase">
+            <div class="stage">
+              <div class="card3d" id="card3d">
+                <span class="elixir">` + cost + `</span>
+                <span class="ribbon" id="ribbon"></span>
+                <div class="art"><img id="image" src="` + esc(urls.normal) + `" alt="` + esc(c.name) + `"></div>
+                <div>
+                  <div class="nm">` + esc(c.name) + `</div>
+                  <div class="rt">` + esc(cap(c.rarity)) + `</div>
+                </div>
+                <div class="fx"><b></b><i></i><i></i><i></i></div>
+                <div class="glare" id="glare"></div>
+              </div>
+            </div>
+            <div class="modes">` + (modeBtns || '<div class="no-forms">This card has no Evolution or Hero form.</div>') + `</div>
+          </div>
+
+          <div class="info mt-4 mb-5">
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+              <h1 class="h2 fw-bold m-0">` + esc(c.name) + `</h1>
+            </div>
+
+            <div class="panel p-3 p-md-4 mb-4">
+              <div class="sec-title">About</div>
+              <div class="desc" id="desc"><div class="desc-skel" style="width:95%"></div><div class="desc-skel" style="width:70%"></div></div>
+            </div>
+
+            <div class="row g-3 mb-4">
+              <div class="col-6 col-md-3"><div class="panel stat"><div class="v">` + cost + `</div><div class="l">Elixir cost</div><div class="elixir-bar">` + bar + `</div></div></div>
+              <div class="col-6 col-md-3"><div class="panel stat"><div class="v">` + esc(cap(c.rarity)) + `</div><div class="l">Rarity</div></div></div>
+              <div class="col-6 col-md-3"><div class="panel stat"><div class="v">` + c.maxLevel + `</div><div class="l">Max level</div></div></div>
+              <div class="col-6 col-md-3"><div class="panel stat"><div class="v">` + (c.maxEvolutionLevel || 0) + `</div><div class="l">Evolution levels</div></div></div>
+            </div>
+
+          </div>
+        </div>`;
+
+      const bE = document.getElementById('btnEvo'), bH = document.getElementById('btnHero');
+      if (bE) bE.onclick = () => setForm('evo');
+      if (bH) bH.onclick = () => setForm('hero');
+      initTilt();
+      fillDescription(c);
+    }
+
+    async function fillDescription(c) {
+      const meta = (await loadMeta()).find(m => m.id === c.id);
+      const el = document.getElementById('desc');
+      if (!el) return;
+      let text = meta && meta.description ? meta.description : '';
+      if (!text) {
+        const forms = [urls.evo && 'an Evolution', urls.hero && 'a Hero'].filter(Boolean);
+        text = c.name + ' is a ' + c.rarity + ' card that costs ' + (c.elixirCost ?? '?') + ' elixir and can be upgraded up to level ' + c.maxLevel + '.' +
+          (forms.length ? ' It also has ' + forms.join(' and ') + ' form.' : '');
+      }
+      el.textContent = text;
+    }
+
+    function setForm(name) {
+      if (morphBusy) return;
+      const target = formState === name ? 'normal' : name;
+      const card = document.getElementById('card3d');
+      const img = document.getElementById('image');
+      morphBusy = true;
+      card.classList.remove('morphing'); void card.offsetWidth;
+      card.classList.add('morphing');
+      setTimeout(() => {
+        img.src = urls[target];
+        card.classList.toggle('form-evo', target === 'evo');
+        card.classList.toggle('form-hero', target === 'hero');
+        document.getElementById('ribbon').textContent = target === 'evo' ? 'EVOLUTION' : target === 'hero' ? 'HERO' : '';
+      }, 330);
+      setTimeout(() => { card.classList.remove('morphing'); morphBusy = false; }, 1000);
+      formState = target;
+      const bE = document.getElementById('btnEvo'), bH = document.getElementById('btnHero');
+      if (bE) { bE.classList.toggle('on', target === 'evo'); bE.querySelector('span').textContent = target === 'evo' ? 'Back to base' : 'Evolve'; }
+      if (bH) { bH.classList.toggle('on', target === 'hero'); bH.querySelector('span').textContent = target === 'hero' ? 'Back to base' : 'Hero mode'; }
+    }
+
+    function initTilt() {
+      const card = document.getElementById('card3d');
+      const glare = document.getElementById('glare');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      card.addEventListener('pointermove', (e) => {
+        if (e.pointerType !== 'mouse') return;
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = 'perspective(1000px) rotateX(' + (-y * 22) + 'deg) rotateY(' + (x * 22) + 'deg) scale3d(1.03,1.03,1.03)';
+        glare.style.setProperty('--gx', (e.clientX - r.left) + 'px');
+        glare.style.setProperty('--gy', (e.clientY - r.top) + 'px');
+      });
+      card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { const a = document.getElementById('prevCard'); if (a.href) location.href = a.href; }
+      if (e.key === 'ArrowRight') { const a = document.getElementById('nextCard'); if (a.href) location.href = a.href; }
+    });
+
+    getCard().catch(() => {
+      document.getElementById("content").innerHTML = '<div class="text-center h4 py-5">Could not load the card.</div>';
+    });
+  </script>
+</body>
+
+</html>
